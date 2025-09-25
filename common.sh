@@ -8,7 +8,7 @@ LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 START_TIME=$(date +%s)
-SCRIPT_DIR=$PWD
+SCRIPT_DIR=$PWD # for absoulute path
 MONGODB_HOST=mongodb.daws86s.fun
 
 mkdir -p $LOGS_FOLDER
@@ -44,6 +44,13 @@ nodejs_setup(){
 }
 
 app_setup(){
+    id roboshop &>>$LOG_FILE
+    if [ $? -ne 0 ]; then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+        VALIDATE $? "Creating system user"
+    else
+        echo -e "User already exist ... $Y SKIPPING $N"
+    fi
     mkdir -p /app
     VALIDATE $? "Creating app directory"
 
